@@ -1,10 +1,13 @@
 import * as fs from "node:fs";
+import * as path from "node:path";
 const fileName = "big-file.txt";
 const fileStream = fs.createWriteStream(fileName);
+console.time("Track");
 for (let i = 0; i < 100000; i++) {
     fileStream.write(`Dòng thứ ${i}: Chào Hải, đây là dữ liệu mẫu để test Stream trong Node.js\n`);
 }
 ;
+console.timeEnd("Track");
 fileStream.end();
 fileStream.on("finish", () => {
     console.log("Tao file test thanh cong!");
@@ -20,8 +23,10 @@ fileStream.on("finish", () => {
     });
     readStream.on('end', () => {
         console.log('🏁 Đã đọc xong toàn bộ file bằng Stream!');
+        console.timeLog("Track");
         // Xóa file sau khi test xong
-        fs.unlinkSync(fileName);
+        // fs.unlinkSync(fileName);
+        console.log(`File luu tai: ${path.join(process.cwd(), fileName)}`);
     });
     readStream.on('error', (err) => {
         console.error('❌ Lỗi khi đọc file:', err.message);
