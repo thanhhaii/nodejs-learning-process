@@ -16,13 +16,15 @@ export const requireAuth = (
 	}
 
 	const token = authHeader.slice(7).trim();
+	const decoded = tokenService.verifyToken(token);
 
-	if (!token || !tokenService.verifyToken(token)) {
+	if (!decoded) {
 		res.status(401).json({
 			error: "Invalid or expired token",
 		});
 		return;
 	}
 
+	req.user = decoded;
 	next();
 };

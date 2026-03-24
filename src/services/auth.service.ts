@@ -13,13 +13,14 @@ export const registerUser = async (
 	user: UserRegister,
 ): Promise<RegisterUserResult> => {
 	try {
-		const userCheck = await query("SELECT 1 FROM users WHERE email = $1", [
-			user.email,
-		]);
+		const userCheck = await query(
+			"SELECT 1 FROM users WHERE email = $1 OR username = $2",
+			[user.email, user.username],
+		);
 
 		if (userCheck.rows.length > 0) {
 			return {
-				error: "Email đã được sử dụng",
+				error: "Email hoặc username đã được sử dụng",
 				status: 409,
 			};
 		}
@@ -34,6 +35,13 @@ export const registerUser = async (
 			user: newUser.rows[0] as AuthUser,
 		};
 	} catch (error) {
+		if ((error as NodeJS.ErrnoException & { code?: string }).code === "23505") {
+			return {
+				error: "Email hoặc username đã được sử dụng",
+				status: 409,
+			};
+		}
+
 		console.error("Register Error:", error);
 
 		return {

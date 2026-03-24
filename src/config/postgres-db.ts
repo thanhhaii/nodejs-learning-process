@@ -5,8 +5,6 @@ const pool = new Pool({
 	connectionString: env.DATABASE_URL,
 });
 
-pool.on("connect", () => {
-	console.log("Connected to Postgres Database!");
-});
+console.log("Postgres connection pool initialized.");
 
 export const query = pool.query.bind(pool);

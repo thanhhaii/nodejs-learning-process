@@ -2,17 +2,17 @@ version: "3.9"
 
 services:
   postgres:
-    image: postgres:latest
+    image: postgres:16
     container_name: postgres_db
     restart: unless-stopped
     ports:
       - 5432:5432
     environment:
       POSTGRES_DB: social_learning
-      POSTGRES_USER: hailam
-      POSTGRES_PASSWORD: thanhhai
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
     volumes:
-      - postgres_data:/var/lib/postgresql
+      - postgres_data:/var/lib/postgresql/data
 
 volumes:
   postgres_data:
