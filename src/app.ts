@@ -6,6 +6,7 @@ import { apiRouter } from "./routes/index.js";
 export const app = express();
 
 app.use(requestLogger);
+app.use(express.json());
 
 app.get("/", (_req, res) => {
 	res.status(200).json({
