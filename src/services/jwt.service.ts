@@ -47,12 +47,30 @@ class TokenService {
 		};
 	}
 
-	public verifyToken(token: string): boolean {
+	public verifyToken(
+		token: string,
+	): (jwt.JwtPayload & { id: AuthUser["id"]; type: "access" }) | null {
 		try {
-			jwt.verify(token, this.secretKey);
-			return true;
+			const decoded = jwt.verify(token, this.secretKey, {
+				algorithms: ["HS256"],
+			});
+
+			if (typeof decoded !== "object" || decoded === null) {
+				return null;
+			}
+
+			const payload = decoded as jwt.JwtPayload & {
+				id: AuthUser["id"];
+				type: string;
+			};
+
+			if (payload.type !== "access") {
+				return null;
+			}
+
+			return payload as jwt.JwtPayload & { id: AuthUser["id"]; type: "access" };
 		} catch {
-			return false;
+			return null;
 		}
 	}
 }
