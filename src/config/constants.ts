@@ -1,1 +1,3 @@
-export const PORT = Number.parseInt(process.env.PORT ?? "8080", 10);
+import { env } from "./env.js";
+
+export const PORT = env.PORT;
