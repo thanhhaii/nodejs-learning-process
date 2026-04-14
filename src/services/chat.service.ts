@@ -88,21 +88,23 @@ export async function handleSendMessage(
 }
 
 export async function getChatHistory(
-	currentUserId: string,
-	otherUserId: number,
+	currentUserId: number,
+	otherUserId: string,
 ): Promise<ChatHistoryItem[]> {
-	if (!otherUserId || typeof otherUserId !== "string") {
+	if (!otherUserId || Number.isNaN(Number(otherUserId))) {
 		throw new Error("Invalid userId");
 	}
 
-	const exists = await chatRepo.userExists(otherUserId);
+	const normalizedOtherUserId = Number(otherUserId);
+
+	const exists = await chatRepo.userExists(normalizedOtherUserId);
 	if (!exists) {
 		throw new Error("User not found");
 	}
 
 	const messages = await chatRepo.getMessagesBetweenUsers(
-		currentUserId,
-		otherUserId,
+		String(currentUserId),
+		String(normalizedOtherUserId),
 	);
 
 	return messages.map((m) => ({

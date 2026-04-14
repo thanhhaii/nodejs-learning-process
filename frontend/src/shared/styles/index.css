@@ -1,0 +1,39 @@
+@import "tailwindcss";
+
+/*biome-ignore*/
+@theme {
+	--font-sans: "Helvetica Neue", Arial, sans-serif;
+	--color-accent: #00ff88;
+	--color-page: #f4f4f4;
+	--color-sidebar: #fafafa;
+	--color-border-light: #eeeeee;
+	--color-muted: #666666;
+}
+
+:root {
+	color: #111111;
+	background: var(--color-page);
+	font-family: var(--font-sans);
+}
+
+* {
+	box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+	min-height: 100%;
+}
+
+body {
+	margin: 0;
+	background:
+		radial-gradient(circle at top left, rgba(0, 255, 136, 0.1), transparent 30%),
+		linear-gradient(180deg, #f8f8f8 0%, #efefef 100%);
+}
+
+button,
+input {
+	font: inherit;
+}
