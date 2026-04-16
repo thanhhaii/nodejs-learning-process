@@ -16,13 +16,13 @@ export const up = (pgm) => {
 			default: pgm.func("gen_random_uuid()"),
 		},
 		sender_id: {
-			type: "integer",
+			type: "uuid",
 			notNull: true,
 			references: '"users"(id)',
 			onDelete: "CASCADE",
 		},
 		receiver_id: {
-			type: "integer",
+			type: "uuid",
 			notNull: true,
 			references: '"users"(id)',
 			onDelete: "CASCADE",

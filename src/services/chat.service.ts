@@ -2,6 +2,7 @@ import { WebSocket } from "ws";
 import * as chatRepo from "../repositories/chat.repository.js";
 import type {
 	ChatHistoryItem,
+	ChatHistorySummary,
 	CreateMessageInput,
 	MessageReceivedEvent,
 	MessageSentEvent,
@@ -10,13 +11,13 @@ import type {
 	SocketErrorEvent,
 } from "../types/chat/index.js";
 
-const onlineUsers = new Map<number, WebSocket>();
+const onlineUsers = new Map<string, WebSocket>();
 
-export function registerSocket(userId: number, socket: WebSocket): void {
+export function registerSocket(userId: string, socket: WebSocket): void {
 	onlineUsers.set(userId, socket);
 }
 
-export function removeSocket(userId: number): void {
+export function removeSocket(userId: string): void {
 	onlineUsers.delete(userId);
 }
 
@@ -41,17 +42,14 @@ export async function handleSendMessage(
 		sendToSocket(senderSocket, "error", err);
 	};
 
-	if (!data.receiverId || typeof data.receiverId !== "number") {
+	if (!data.receiverId || typeof data.receiverId !== "string") {
 		return emitError("receiverId is required.");
 	}
 
-	console.log({
-		data,
-		sender,
-	});
 	if (data.receiverId === sender.userId) {
 		return emitError("You cannot message yourself.");
 	}
+
 	if (!data.content || !data.content.trim()) {
 		return emitError("Message content cannot be empty.");
 	}
@@ -61,24 +59,39 @@ export async function handleSendMessage(
 		return emitError("Receiver not found");
 	}
 
+	const conversation = await chatRepo.findOrCreateConversation(
+		sender.userId,
+		data.receiverId,
+	);
+
 	const input: CreateMessageInput = {
+		conversationId: conversation.id,
 		senderId: sender.userId,
 		receiverId: data.receiverId,
 		content: data.content.trim(),
 	};
 	const saved = await chatRepo.insertMessage(input);
 
+	await chatRepo.updateConversationLastMessage(
+		conversation.id,
+		saved.id,
+		saved.createdAt,
+	);
+
 	const sentEvent: MessageSentEvent = {
 		messageId: saved.id,
+		conversationId: saved.conversationId,
 		receiverId: saved.receiverId,
 		content: saved.content,
 		createdAt: saved.createdAt.toISOString(),
 	};
 	sendToSocket(senderSocket, "message_sent", sentEvent);
+
 	const receiverSocket = onlineUsers.get(data.receiverId);
 	if (receiverSocket) {
 		const receivedEvent: MessageReceivedEvent = {
 			messageId: saved.id,
+			conversationId: saved.conversationId,
 			senderId: saved.senderId,
 			content: saved.content,
 			createdAt: saved.createdAt.toISOString(),
@@ -88,30 +101,40 @@ export async function handleSendMessage(
 }
 
 export async function getChatHistory(
-	currentUserId: number,
+	currentUserId: string,
 	otherUserId: string,
 ): Promise<ChatHistoryItem[]> {
-	if (!otherUserId || Number.isNaN(Number(otherUserId))) {
+	if (!otherUserId) {
 		throw new Error("Invalid userId");
 	}
 
-	const normalizedOtherUserId = Number(otherUserId);
-
-	const exists = await chatRepo.userExists(normalizedOtherUserId);
+	const exists = await chatRepo.userExists(otherUserId);
 	if (!exists) {
 		throw new Error("User not found");
 	}
 
-	const messages = await chatRepo.getMessagesBetweenUsers(
-		String(currentUserId),
-		String(normalizedOtherUserId),
+	const conversation = await chatRepo.findConversationByUsers(
+		currentUserId,
+		otherUserId,
 	);
+	if (!conversation) {
+		return [];
+	}
+
+	const messages = await chatRepo.getMessagesByConversationId(conversation.id);
 
 	return messages.map((m) => ({
 		id: m.id,
+		conversationId: m.conversationId,
 		senderId: m.senderId,
 		receiverId: m.receiverId,
 		content: m.content,
 		createdAt: m.createdAt,
 	}));
+}
+
+export async function getChatHistories(
+	currentUserId: string,
+): Promise<ChatHistorySummary[]> {
+	return chatRepo.getUserHistories(currentUserId);
 }

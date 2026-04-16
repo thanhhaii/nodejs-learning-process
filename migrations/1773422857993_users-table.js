@@ -9,25 +9,29 @@ export const shorthands = undefined;
  * @returns {Promise<void> | void}
  */
 export const up = (pgm) => {
-	pgm.createTable("users", {
-		id: "id",
-		username: {
-			type: "varchar(50)",
-			notNull: true,
-			unique: true,
-		},
-		email: {
-			type: "varchar(55)",
-			notNull: true,
-			unique: true,
-		},
-		password_hash: { type: "text", notNull: true },
-		created_at: {
-			type: "timestamp",
-			notNull: true,
-			default: pgm.func("current_timestamp"),
-		},
-	});
+    pgm.createTable("users", {
+        id: {
+            type: "uuid",
+            primaryKey: true,
+            default: pgm.func("gen_random_uuid()"),
+        },
+        username: {
+            type: "varchar(50)",
+            notNull: true,
+            unique: true,
+        },
+        email: {
+            type: "varchar(55)",
+            notNull: true,
+            unique: true,
+        },
+        password_hash: { type: "text", notNull: true },
+        created_at: {
+            type: "timestamp",
+            notNull: true,
+            default: pgm.func("current_timestamp"),
+        },
+    });
 };
 
 /**
@@ -36,5 +40,5 @@ export const up = (pgm) => {
  * @returns {Promise<void> | void}
  */
 export const down = (pgm) => {
-	pgm.dropTable("users");
+    pgm.dropTable("users");
 };

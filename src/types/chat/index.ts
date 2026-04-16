@@ -1,49 +1,64 @@
+export type Conversation = {
+	id: string;
+	userOneId: string;
+	userTwoId: string;
+	lastMessageId: string | null;
+	lastMessageAt: Date | null;
+	createdAt: Date;
+	updatedAt: Date;
+};
+
 export type ChatMessage = {
 	id: string;
-	senderId: number;
-	receiverId: number;
+	conversationId: string;
+	senderId: string;
+	receiverId: string;
 	content: string;
 	createdAt: Date;
 };
 
-// service -> repository
 export type CreateMessageInput = {
-	senderId: number;
-	receiverId: number;
+	conversationId: string;
+	senderId: string;
+	receiverId: string;
 	content: string;
 };
 
-// return to client
 export type ChatHistoryItem = ChatMessage;
 
+export type ChatHistorySummary = {
+	conversationId: string;
+	otherUserId: string;
+	lastMessage: string | null;
+	lastMessageAt: Date | null;
+};
+
 export type SocketAuthUser = {
-	userId: number;
+	userId: string;
 	email: string;
 };
 
-// Client -> Server
 export interface SendMessageEvent {
-	receiverId: number;
+	receiverId: string;
 	content: string;
 }
 
-// Server -> Sender (ack)
 export type MessageSentEvent = {
 	messageId: string;
-	receiverId: number;
+	conversationId: string;
+	receiverId: string;
 	content: string;
 	createdAt: string;
 };
 
-// Server -> Receiver
 export interface MessageReceivedEvent {
 	messageId: string;
-	senderId: number;
+	conversationId: string;
+	senderId: string;
 	content: string;
 	createdAt: string;
 }
 
-// Server -> Client (lỗi)
 export type SocketErrorEvent = {
 	message: string;
 };

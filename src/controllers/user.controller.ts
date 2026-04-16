@@ -8,9 +8,9 @@ export const handleUsersRoute = (_req: Request, res: Response) => {
 };
 
 export const handleSingleUserRoute = (req: Request, res: Response) => {
-	const id = Number.parseInt(req.params.id as string, 10);
+	const id = req.params.id as string;
 
-	if (Number.isNaN(id)) {
+	if (!id) {
 		res.status(400).json({ error: "Invalid user id" });
 		return;
 	}

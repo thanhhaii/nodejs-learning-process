@@ -22,6 +22,9 @@ export const openApiDocument = {
 			name: "Users",
 		},
 		{
+			name: "Chat",
+		},
+		{
 			name: "Files",
 		},
 	],
@@ -50,14 +53,20 @@ export const openApiDocument = {
 						type: "string",
 						example: "Internal Server Error",
 					},
+					message: {
+						type: "string",
+						example: "Something went wrong",
+						nullable: true,
+					},
 				},
 			},
 			User: {
 				type: "object",
 				properties: {
 					id: {
-						type: "integer",
-						example: 1,
+						type: "string",
+						format: "uuid",
+						example: "2db7b37c-5901-447b-9e1d-5d5bb12f0c41",
 					},
 					username: {
 						type: "string",
@@ -118,6 +127,88 @@ export const openApiDocument = {
 					refreshToken: {
 						type: "string",
 						example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+					},
+				},
+			},
+			ChatMessage: {
+				type: "object",
+				properties: {
+					id: {
+						type: "string",
+						format: "uuid",
+						example: "7d4f9578-3d63-4f56-a18b-0cfce03bdad3",
+					},
+					conversationId: {
+						type: "string",
+						format: "uuid",
+						example: "9c26dc85-2044-4ebe-8455-a77652ecfe8f",
+					},
+					senderId: {
+						type: "string",
+						format: "uuid",
+						example: "2db7b37c-5901-447b-9e1d-5d5bb12f0c41",
+					},
+					receiverId: {
+						type: "string",
+						format: "uuid",
+						example: "5d28db85-f3d5-4627-bf3f-e2d6cff3450a",
+					},
+					content: {
+						type: "string",
+						example: "Hello from websocket chat",
+					},
+					createdAt: {
+						type: "string",
+						format: "date-time",
+						example: "2026-04-16T08:30:00.000Z",
+					},
+				},
+			},
+			ChatHistorySummary: {
+				type: "object",
+				properties: {
+					conversationId: {
+						type: "string",
+						format: "uuid",
+						example: "9c26dc85-2044-4ebe-8455-a77652ecfe8f",
+					},
+					otherUserId: {
+						type: "string",
+						format: "uuid",
+						example: "5d28db85-f3d5-4627-bf3f-e2d6cff3450a",
+					},
+					lastMessage: {
+						type: "string",
+						nullable: true,
+						example: "Hello from websocket chat",
+					},
+					lastMessageAt: {
+						type: "string",
+						format: "date-time",
+						nullable: true,
+						example: "2026-04-16T08:30:00.000Z",
+					},
+				},
+			},
+			ChatMessagesResponse: {
+				type: "object",
+				properties: {
+					data: {
+						type: "array",
+						items: {
+							$ref: "#/components/schemas/ChatMessage",
+						},
+					},
+				},
+			},
+			ChatHistoriesResponse: {
+				type: "object",
+				properties: {
+					data: {
+						type: "array",
+						items: {
+							$ref: "#/components/schemas/ChatHistorySummary",
+						},
 					},
 				},
 			},
@@ -294,7 +385,8 @@ export const openApiDocument = {
 						in: "path",
 						required: true,
 						schema: {
-							type: "integer",
+							type: "string",
+							format: "uuid",
 						},
 					},
 				],
@@ -331,6 +423,116 @@ export const openApiDocument = {
 					},
 					"404": {
 						description: "User not found",
+						content: {
+							"application/json": {
+								schema: {
+									$ref: "#/components/schemas/ErrorResponse",
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		"/api/chat/histories": {
+			get: {
+				tags: ["Chat"],
+				summary: "Get chat histories for the current user",
+				security: [{ bearerAuth: [] }],
+				responses: {
+					"200": {
+						description: "Chat histories fetched successfully",
+						content: {
+							"application/json": {
+								schema: {
+									$ref: "#/components/schemas/ChatHistoriesResponse",
+								},
+							},
+						},
+					},
+					"401": {
+						description: "Unauthorized",
+						content: {
+							"application/json": {
+								schema: {
+									$ref: "#/components/schemas/ErrorResponse",
+								},
+							},
+						},
+					},
+					"500": {
+						description: "Internal server error",
+						content: {
+							"application/json": {
+								schema: {
+									$ref: "#/components/schemas/ErrorResponse",
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		"/api/chat/{userId}/messages": {
+			get: {
+				tags: ["Chat"],
+				summary: "Get message history with another user",
+				security: [{ bearerAuth: [] }],
+				parameters: [
+					{
+						name: "userId",
+						in: "path",
+						required: true,
+						schema: {
+							type: "string",
+							format: "uuid",
+						},
+						description: "The other user's id",
+					},
+				],
+				responses: {
+					"200": {
+						description: "Messages fetched successfully",
+						content: {
+							"application/json": {
+								schema: {
+									$ref: "#/components/schemas/ChatMessagesResponse",
+								},
+							},
+						},
+					},
+					"400": {
+						description: "Invalid user id",
+						content: {
+							"application/json": {
+								schema: {
+									$ref: "#/components/schemas/ErrorResponse",
+								},
+							},
+						},
+					},
+					"401": {
+						description: "Unauthorized",
+						content: {
+							"application/json": {
+								schema: {
+									$ref: "#/components/schemas/ErrorResponse",
+								},
+							},
+						},
+					},
+					"404": {
+						description: "User not found",
+						content: {
+							"application/json": {
+								schema: {
+									$ref: "#/components/schemas/ErrorResponse",
+								},
+							},
+						},
+					},
+					"500": {
+						description: "Internal server error",
 						content: {
 							"application/json": {
 								schema: {
