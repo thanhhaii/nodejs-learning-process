@@ -2,7 +2,7 @@ import { MoreVertical, Phone, Video } from "lucide-react";
 import type { Conversation } from "@/features/chat/types/chat.types";
 
 type ChatHeaderProps = {
-	conversation: Conversation;
+	conversation: Conversation | null;
 };
 
 export function ChatHeader({ conversation }: ChatHeaderProps) {
@@ -11,7 +11,7 @@ export function ChatHeader({ conversation }: ChatHeaderProps) {
 			<div className="flex items-center space-x-4">
 				<div>
 					<h1 className="text-[18px] font-extrabold uppercase">
-						{conversation.name}
+						{conversation?.name ?? "Chat"}
 					</h1>
 					<span className="mt-1 block text-[10px] font-bold uppercase tracking-[0.15em] text-muted">
 						Direct message

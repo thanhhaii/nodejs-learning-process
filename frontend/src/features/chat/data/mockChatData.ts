@@ -16,7 +16,8 @@ export const ONLINE_USERS: PresenceUser[] = [
 
 export const CONVERSATIONS: Conversation[] = [
 	{
-		id: 1,
+		id: "1",
+		otherUserId: "10",
 		name: "Team Alpha",
 		lastMessage: "Let's meet at 3 PM.",
 		time: "10:30 AM",
@@ -24,7 +25,8 @@ export const CONVERSATIONS: Conversation[] = [
 		avatar: "https://i.pravatar.cc/150?u=10",
 	},
 	{
-		id: 2,
+		id: "2",
+		otherUserId: "2",
 		name: "Bob",
 		lastMessage: "Got the files, thanks!",
 		time: "Yesterday",
@@ -32,7 +34,8 @@ export const CONVERSATIONS: Conversation[] = [
 		avatar: "https://i.pravatar.cc/150?u=2",
 	},
 	{
-		id: 3,
+		id: "3",
+		otherUserId: "11",
 		name: "Design Sync",
 		lastMessage: "The new logo looks great.",
 		time: "Yesterday",
@@ -40,7 +43,8 @@ export const CONVERSATIONS: Conversation[] = [
 		avatar: "https://i.pravatar.cc/150?u=11",
 	},
 	{
-		id: 4,
+		id: "4",
+		otherUserId: "1",
 		name: "Alice",
 		lastMessage: "Are we still on for lunch?",
 		time: "Tuesday",
@@ -48,7 +52,8 @@ export const CONVERSATIONS: Conversation[] = [
 		avatar: "https://i.pravatar.cc/150?u=1",
 	},
 	{
-		id: 5,
+		id: "5",
+		otherUserId: "12",
 		name: "Marketing",
 		lastMessage: "Campaign goes live tomorrow.",
 		time: "Monday",
@@ -59,28 +64,28 @@ export const CONVERSATIONS: Conversation[] = [
 
 export const INITIAL_MESSAGES: ChatMessage[] = [
 	{
-		id: 1,
+		id: "mock-1",
 		sender: "Alice",
 		text: "Hi everyone! How is the project going?",
 		timestamp: "10:00 AM",
 		isMe: false,
 	},
 	{
-		id: 2,
+		id: "mock-2",
 		sender: "Bob",
 		text: "Going well. Just finished the frontend.",
 		timestamp: "10:05 AM",
 		isMe: false,
 	},
 	{
-		id: 3,
+		id: "mock-3",
 		sender: "Me",
 		text: "Awesome! I will start on the backend today.",
 		timestamp: "10:10 AM",
 		isMe: true,
 	},
 	{
-		id: 4,
+		id: "mock-4",
 		sender: "Alice",
 		text: "Great. Let's sync up tomorrow.",
 		timestamp: "10:15 AM",

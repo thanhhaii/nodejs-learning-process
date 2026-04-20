@@ -1,11 +1,12 @@
 export type PresenceUser = {
-	id: number;
+	id: number | string;
 	name: string;
 	avatar: string;
 };
 
 export type Conversation = {
-	id: number;
+	id: string;
+	otherUserId: string;
 	name: string;
 	lastMessage: string;
 	time: string;
@@ -14,7 +15,7 @@ export type Conversation = {
 };
 
 export type ChatMessage = {
-	id: number;
+	id: string;
 	sender: string;
 	text: string;
 	timestamp: string;
@@ -26,4 +27,29 @@ export type ChatProfile = {
 	avatar: string;
 	status: string;
 	password: string;
+};
+
+export type ChatHistorySummary = {
+	conversationId: string;
+	otherUserId: string;
+	otherUsername: string;
+	lastMessage: string | null;
+	lastMessageAt: string | null;
+};
+
+export type ChatHistoryResponse = {
+	data: ChatHistorySummary[];
+};
+
+export type ApiChatMessage = {
+	id: string;
+	conversationId: string;
+	senderId: string;
+	receiverId: string;
+	content: string;
+	createdAt: string;
+};
+
+export type ChatMessagesResponse = {
+	data: ApiChatMessage[];
 };

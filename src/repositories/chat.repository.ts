@@ -95,12 +95,7 @@ export async function insertMessage(
 		`INSERT INTO messages (conversation_id, sender_id, receiver_id, content)
 		 VALUES ($1, $2, $3, $4)
 		 RETURNING *`,
-		[
-			input.conversationId,
-			input.senderId,
-			input.receiverId,
-			input.content,
-		],
+		[input.conversationId, input.senderId, input.receiverId, input.content],
 	);
 
 	return mapMessageRow(rows[0]);
@@ -155,6 +150,7 @@ export async function getUserHistories(
 	);
 
 	return rows.map((row) => ({
+		otherUsername: row.other_username,
 		conversationId: row.conversation_id,
 		otherUserId: row.other_user_id,
 		lastMessage: row.last_message ?? null,

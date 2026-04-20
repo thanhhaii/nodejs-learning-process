@@ -29,6 +29,7 @@ export type ChatHistoryItem = ChatMessage;
 export type ChatHistorySummary = {
 	conversationId: string;
 	otherUserId: string;
+	otherUsername: string;
 	lastMessage: string | null;
 	lastMessageAt: Date | null;
 };

@@ -9,20 +9,28 @@ import type {
 } from "@/features/chat/types/chat.types";
 
 type SidebarProps = {
+	activeConversationId: string | null;
 	conversations: Conversation[];
 	currentUser: ChatProfile;
+	errorMessage?: string | null;
+	isLoading?: boolean;
 	onLogout: () => void;
 	onOpenSettings: () => void;
 	onSearchChange: (value: string) => void;
+	onSelectConversation: (conversation: Conversation) => void;
 	onlineUsers: PresenceUser[];
 };
 
 export function Sidebar({
+	activeConversationId,
 	conversations,
 	currentUser,
+	errorMessage,
+	isLoading,
 	onLogout,
 	onOpenSettings,
 	onSearchChange,
+	onSelectConversation,
 	onlineUsers,
 }: SidebarProps) {
 	return (
@@ -49,7 +57,13 @@ export function Sidebar({
 				</label>
 			</div>
 
-			<ConversationList conversations={conversations} />
+			<ConversationList
+				activeConversationId={activeConversationId}
+				conversations={conversations}
+				errorMessage={errorMessage}
+				isLoading={isLoading}
+				onSelectConversation={onSelectConversation}
+			/>
 
 			<CurrentUserCard
 				currentUser={currentUser}
